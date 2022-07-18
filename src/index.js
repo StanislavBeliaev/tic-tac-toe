@@ -13,55 +13,73 @@ class Board extends React.Component {
   renderSquare(i) {
     return (
       <Square
+        key={i}
         value={this.props.squares[i]}
         onClick={() => this.props.onClick(i)}
       />
     );
   }
+  createrows(size) {
+    return Array(size)
+      .fill(null)
+      .map((_, index1) => (
+        <div key={index1} className="board-row">
+          {Array(size)
+            .fill(null)
+            .map((_, index2) => this.renderSquare(size * index1 + index2))}
+        </div>
+      ));
+  }
 
   render() {
-    return (
-      <div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
-      </div>
-    );
+    return <div>{this.createrows(this.props.Size)}</div>;
   }
 }
 class GameManager extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isShown: false,
-      isShownAI: false,
+      isShownOption: false,
+      Size: 3,
+      GameMode: "MainMenu",
     };
   }
+  //  changeisshown(param) {
+  //   return this.setState({ isShown: false });
+  // }
   render() {
-    return this.state.isShown ? (
-      <Game isAI={this.state.isShownAI} />
-    ) : (
-      <div>
-        <button onClick={() => this.setState({ isShown: true })}>1 vs 1</button>
-        <button
-          onClick={() => this.setState({ isShownAI: true, isShown: true })}
-        >
-          Man vs AI
-        </button>
-      </div>
-    );
+    if (this.state.GameMode === "1vs1") {
+      return (
+        <Game
+          backtomenu={() => this.setState({ GameMode: "MainMenu" })}
+          Size={this.state.Size}
+        />
+      );
+    } else if (this.state.GameMode === "AI") {
+      return (
+        <Game
+          isAI
+          backtomenu={() => this.setState({ GameMode: "MainMenu" })}
+          Size={this.state.Size}
+        />
+      );
+    } else if (this.state.GameMode === "MainMenu") {
+      return (
+        <div>
+          <button onClick={() => this.setState({ GameMode: "1vs1" })}>
+            1 vs 1
+          </button>
+          <button onClick={() => this.setState({ GameMode: "AI" })}>
+            Man vs AI
+          </button>
+          <button onClick={() => this.setState({ GameMode: "Options" })}>
+            Options
+          </button>
+        </div>
+      );
+    } else if (this.state.GameMode === "Options") {
+      return <Option onSizeSelect = {(i) => this.setState({GameMode:'MainMenu', Size:i})}/>;
+    }
   }
 }
 class Game extends React.Component {
@@ -70,7 +88,7 @@ class Game extends React.Component {
     this.state = {
       history: [
         {
-          squares: Array(9).fill(null),
+          squares: Array(props.Size).fill(null),
         },
       ],
       stepNumber: 0,
@@ -86,7 +104,7 @@ class Game extends React.Component {
     }
 
     squares[i] = this.state.xIsNext ? "X" : "O";
-    if (this.props.isAI) {
+    if (this.props.isAI && !calculateWinner(squares)) {
       let index = getRandomInt(8);
       while (squares[index]) {
         index = getRandomInt(8);
@@ -133,9 +151,12 @@ class Game extends React.Component {
           <Board
             squares={current.squares}
             onClick={(i) => this.handleClick(i)}
+            Size={this.props.Size}
           />
         </div>
+
         <div className="game-info">
+          <button onClick={this.props.backtomenu}> back to menu </button>
           <div>{status}</div>
           <ol>{moves}</ol>
         </div>
@@ -143,7 +164,19 @@ class Game extends React.Component {
     );
   }
 }
-
+class Option extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+  render(){
+    return(
+      <div>
+      <button onClick={() => this.props.onSizeSelect(3)}>3x3</button>
+      <button onClick={() => this.props.onSizeSelect(5)}>5x5</button>
+      </div>
+    )
+  }
+}
 // ========================================
 function getRandomInt(max) {
   return Math.floor(Math.random() * max);
