@@ -65,20 +65,33 @@ class GameManager extends React.Component {
       );
     } else if (this.state.GameMode === "MainMenu") {
       return (
-        <div>
-          <button onClick={() => this.setState({ GameMode: "1vs1" })}>
+        <div className="GameManager">
+          <button
+            className="GameManager__button"
+            onClick={() => this.setState({ GameMode: "1vs1" })}
+          >
             1 vs 1
           </button>
-          <button onClick={() => this.setState({ GameMode: "AI" })}>
+          <button
+            className="GameManager__button"
+            onClick={() => this.setState({ GameMode: "AI" })}
+          >
             Man vs AI
           </button>
-          <button onClick={() => this.setState({ GameMode: "Options" })}>
+          <button
+            className="GameManager__button"
+            onClick={() => this.setState({ GameMode: "Options" })}
+          >
             Options
           </button>
         </div>
       );
     } else if (this.state.GameMode === "Options") {
-      return <Option onSizeSelect = {(i) => this.setState({GameMode:'MainMenu', Size:i})}/>;
+      return (
+        <Option
+          onSizeSelect={(i) => this.setState({ GameMode: "MainMenu", Size: i })}
+        />
+      );
     }
   }
 }
@@ -156,7 +169,7 @@ class Game extends React.Component {
         </div>
 
         <div className="game-info">
-          <button onClick={this.props.backtomenu}> back to menu </button>
+          <button onClick={this.props.backtomenu}> Back to menu </button>
           <div>{status}</div>
           <ol>{moves}</ol>
         </div>
@@ -168,13 +181,23 @@ class Option extends React.Component {
   constructor(props) {
     super(props);
   }
-  render(){
-    return(
+  render() {
+    return (
       <div>
-      <button onClick={() => this.props.onSizeSelect(3)}>3x3</button>
-      <button onClick={() => this.props.onSizeSelect(5)}>5x5</button>
+        <button
+          className="button__option"
+          onClick={() => this.props.onSizeSelect(3)}
+        >
+          3x3
+        </button>
+        <button
+          className="button__option"
+          onClick={() => this.props.onSizeSelect(5)}
+        >
+          5x5
+        </button>
       </div>
-    )
+    );
   }
 }
 // ========================================
